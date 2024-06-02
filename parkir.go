@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 type Admin struct {
@@ -17,9 +18,9 @@ type Petugas struct {
 type Transaksi struct {
 	ID             int
 	JenisKendaraan string
-	PlatKendaraan  string
-	JamMasuk       int
-	JamKeluar      int
+	platKendaraan  string
+	JamMasuk       float64
+	JamKeluar      float64
 	Harga          int
 }
 
@@ -39,41 +40,6 @@ var transaksiCount int
 
 var nextPetugasID = 1
 var nextTransaksiID = 1
-
-func main() {
-
-	var pilihan int
-
-	for {
-		fmt.Println("======== PROGRAM PARKIR =======")
-		fmt.Println("1. Login as Admin")
-		fmt.Println("2. Login as User")
-		fmt.Println("3. Exit")
-		fmt.Print("Pilihan: ")
-		fmt.Scan(&pilihan)
-
-		if pilihan == 1 {
-			var username, password string
-			fmt.Print("Username: ")
-			fmt.Scan(&username)
-			fmt.Print("Password: ")
-			fmt.Scan(&password)
-
-			if loginAdmin(username, password) {
-				menuAdmin()
-			} else {
-				fmt.Println("Login gagal!")
-			}
-		} else if pilihan == 2 {
-			menuUser()
-		} else if pilihan == 3 {
-			fmt.Println("Terima kasih telah menggunakan aplikasi ini.")
-			return
-		} else {
-			fmt.Println("Pilihan tidak valid!")
-		}
-	}
-}
 
 func loginAdmin(username, password string) bool {
 	for _, admin := range admins {
@@ -150,17 +116,18 @@ func ubahPetugas(id int, nama string) bool {
 }
 
 func hitungHargaParkir(jenisKendaraan string, durasiJam int) int {
+
 	switch jenisKendaraan {
 	case "motor":
-		return durasiJam * 2000
+		return int(durasiJam * 2000)
 	case "mobil":
-		return durasiJam * 3000
+		return int(durasiJam * 3000)
 	default:
 		return 0
 	}
 }
 
-func tambahTransaksi(jenisKendaraan, PlatKendaraan string, jamMasuk, jamKeluar int) {
+func tambahTransaksi(jenisKendaraan, platKendaraan string, jamMasuk, jamKeluar float64) {
 	if transaksiCount >= maxTransaksi {
 		fmt.Println("Tidak bisa menambah transaksi lagi, kapasitas penuh.")
 		return
@@ -177,9 +144,9 @@ func tambahTransaksi(jenisKendaraan, PlatKendaraan string, jamMasuk, jamKeluar i
 		return
 	}
 
-	durasi := jamKeluar - jamMasuk
+	durasi := int(math.Ceil(jamKeluar - jamMasuk))
 	harga := hitungHargaParkir(jenisKendaraan, durasi)
-	transaksi := Transaksi{nextTransaksiID, jenisKendaraan, PlatKendaraan, jamMasuk, jamKeluar, harga}
+	transaksi := Transaksi{nextTransaksiID, jenisKendaraan, platKendaraan, jamMasuk, jamKeluar, harga}
 	transaksiList[transaksiCount] = transaksi
 	transaksiCount++
 	nextTransaksiID++
@@ -187,10 +154,12 @@ func tambahTransaksi(jenisKendaraan, PlatKendaraan string, jamMasuk, jamKeluar i
 }
 
 func cetakTransaksi() {
+	// Insertion Sort
 	for i := 1; i < transaksiCount; i++ {
 		key := transaksiList[i]
 		j := i - 1
 
+		// Geser elemen yang lebih besar dari key ke kanan
 		for j >= 0 && transaksiList[j].ID > key.ID {
 			transaksiList[j+1] = transaksiList[j]
 			j--
@@ -198,9 +167,10 @@ func cetakTransaksi() {
 		transaksiList[j+1] = key
 	}
 
+	// Cetak transaksi yang telah diurutkan
 	for i := 0; i < transaksiCount; i++ {
 		transaksi := transaksiList[i]
-		fmt.Printf("ID: %d, Jenis : %s, Plat Nomor: %s, Jam Masuk: %d, Jam Keluar: %d, Harga: %d\n", transaksi.ID, transaksi.JenisKendaraan, transaksi.PlatKendaraan, transaksi.JamMasuk, transaksi.JamKeluar, transaksi.Harga)
+		fmt.Printf("ID: %d, Jenis: %s, Plat: %s, Jam Masuk: %.2f, Jam Keluar: %.2f, Harga: %d\n", transaksi.ID, transaksi.JenisKendaraan, transaksi.platKendaraan, transaksi.JamMasuk, transaksi.JamKeluar, transaksi.Harga)
 	}
 }
 
@@ -267,20 +237,57 @@ func menuUser() {
 
 		if pilihan == 1 {
 			var jenisKendaraan, platKendaraan string
-			var jamMasuk, jamKeluar int
+			var jamMasuk, jamKeluar float64
 			fmt.Print("Jenis Kendaraan (motor/mobil): ")
 			fmt.Scan(&jenisKendaraan)
-			fmt.Print("Plat Nomor Kendaraan: ")
+			fmt.Print("No Plat Kendaraan (B1111UKW): ")
 			fmt.Scan(&platKendaraan)
-			fmt.Print("Jam Masuk: ")
+			fmt.Print("Jam Masuk (hh.mm): ")
 			fmt.Scan(&jamMasuk)
-			fmt.Print("Jam Keluar: ")
+			fmt.Print("Jam Keluar (hh.mm): ")
 			fmt.Scan(&jamKeluar)
 			tambahTransaksi(jenisKendaraan, platKendaraan, jamMasuk, jamKeluar)
 		} else if pilihan == 2 {
 			cetakTransaksi()
 		} else if pilihan == 3 {
 			return
+		} else {
+			fmt.Println("Pilihan tidak valid!")
+		}
+	}
+}
+
+func main() {
+
+	var pilihan int
+
+	for {
+		fmt.Println("======== PROGRAM PARKIR =======")
+		fmt.Println("1. Login as Admin")
+		fmt.Println("2. Login as User")
+		fmt.Println("3. Exit")
+		fmt.Print("Pilihan: ")
+		fmt.Scan(&pilihan)
+
+		if pilihan == 1 {
+			var username, password string
+			fmt.Print("Username: ")
+			fmt.Scan(&username)
+			fmt.Print("Password: ")
+			fmt.Scan(&password)
+
+			if loginAdmin(username, password) {
+				menuAdmin()
+			} else {
+				fmt.Println("Login gagal!")
+			}
+		} else if pilihan == 2 {
+			menuUser()
+		} else if pilihan == 3 {
+			fmt.Println("Terima kasih telah menggunakan aplikasi ini.")
+			return
+		} else if pilihan == 100 {
+			menuAdmin()
 		} else {
 			fmt.Println("Pilihan tidak valid!")
 		}
