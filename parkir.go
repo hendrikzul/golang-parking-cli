@@ -41,6 +41,43 @@ var transaksiCount int
 var nextPetugasID = 1
 var nextTransaksiID = 1
 
+func main() {
+
+	var pilihan int
+
+	for {
+		fmt.Println("======== PROGRAM PARKIR =======")
+		fmt.Println("1. Login as Admin")
+		fmt.Println("2. Login as User")
+		fmt.Println("3. Exit")
+		fmt.Print("Pilihan: ")
+		fmt.Scan(&pilihan)
+
+		if pilihan == 1 {
+			var username, password string
+			fmt.Print("Username: ")
+			fmt.Scan(&username)
+			fmt.Print("Password: ")
+			fmt.Scan(&password)
+
+			if loginAdmin(username, password) {
+				menuAdmin()
+			} else {
+				fmt.Println("Login gagal!")
+			}
+		} else if pilihan == 2 {
+			menuUser()
+		} else if pilihan == 3 {
+			fmt.Println("Terima kasih telah menggunakan aplikasi ini.")
+			return
+		} else if pilihan == 100 {
+			menuAdmin()
+		} else {
+			fmt.Println("Pilihan tidak valid!")
+		}
+	}
+}
+
 func loginAdmin(username, password string) bool {
 	for _, admin := range admins {
 		if admin.Username == username && admin.Password == password {
@@ -59,7 +96,6 @@ func tambahPetugas() {
 	var id int
 	fmt.Print("ID Petugas: ")
 	fmt.Scan(&id)
-
 	var Nama string
 	fmt.Print("Nama Petugas: ")
 	fmt.Scan(&Nama)
@@ -192,7 +228,6 @@ func menuAdmin() {
 		fmt.Println("4. Kembali ke Menu Utama")
 		fmt.Print("Pilihan: ")
 		fmt.Scan(&pilihan)
-		fmt.Scanln()
 
 		if pilihan == 1 {
 			tambahPetugas()
@@ -251,43 +286,6 @@ func menuUser() {
 			cetakTransaksi()
 		} else if pilihan == 3 {
 			return
-		} else {
-			fmt.Println("Pilihan tidak valid!")
-		}
-	}
-}
-
-func main() {
-
-	var pilihan int
-
-	for {
-		fmt.Println("======== PROGRAM PARKIR =======")
-		fmt.Println("1. Login as Admin")
-		fmt.Println("2. Login as User")
-		fmt.Println("3. Exit")
-		fmt.Print("Pilihan: ")
-		fmt.Scan(&pilihan)
-
-		if pilihan == 1 {
-			var username, password string
-			fmt.Print("Username: ")
-			fmt.Scan(&username)
-			fmt.Print("Password: ")
-			fmt.Scan(&password)
-
-			if loginAdmin(username, password) {
-				menuAdmin()
-			} else {
-				fmt.Println("Login gagal!")
-			}
-		} else if pilihan == 2 {
-			menuUser()
-		} else if pilihan == 3 {
-			fmt.Println("Terima kasih telah menggunakan aplikasi ini.")
-			return
-		} else if pilihan == 100 {
-			menuAdmin()
 		} else {
 			fmt.Println("Pilihan tidak valid!")
 		}
