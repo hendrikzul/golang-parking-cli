@@ -1,5 +1,5 @@
 
-# Project Title
+# Golang-Parking-CLI
 
-A brief description of what this project does and who it's for
+Simple App for parking. With main feature such as : check-in & check-out time, parking cost, add-remove parking officer.
 
